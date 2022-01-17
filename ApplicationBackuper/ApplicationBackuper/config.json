@@ -1,18 +1,21 @@
 {
   "App": {
+    "Name": "Application",
     "StartCommands": [
 
     ],
     "StopCommands": [
 
     ],
-    "PathesToBackup": [
+    "Backup": {
+      "Pathes": [
 
-    ],
-    "BackupFolder": ""
+      ],
+      "OutputFolder": ""
+    }
   },
   "Maintanance": {
-    "RunAt": [
+    "RunEveryDayAt": [
       "00:00"
     ]
   }
