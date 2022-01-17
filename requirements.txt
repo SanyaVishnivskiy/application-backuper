@@ -1,0 +1,11 @@
+On Maintains windows should stop service, backup required files and start service again.
+
+1. Application should be configurable by config.json file. 
+2. Backups should be archived and have name of datetime
+3. Backup files can be folders or files.
+4. Things we can configure are:
+	- stop application commands
+	- start application commands
+	- backup folder
+	- files to backup
+	- Maintanance window

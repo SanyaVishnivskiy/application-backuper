@@ -1,0 +1,19 @@
+{
+  "App": {
+    "StartCommands": [
+
+    ],
+    "StopCommands": [
+
+    ],
+    "PathesToBackup": [
+
+    ],
+    "BackupFolder": ""
+  },
+  "Maintanance": {
+    "RunAt": [
+      "00:00"
+    ]
+  }
+}
