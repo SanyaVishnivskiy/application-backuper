@@ -2,16 +2,18 @@
   "App": {
     "Name": "Application",
     "StartCommands": [
-
+      "cd D:\\temp",
+      "mkdir start"
     ],
     "StopCommands": [
-
+      "cd D:\\temp",
+      "mkdir stop"
     ],
     "Backup": {
       "Pathes": [
-
+        "D:\\site"
       ],
-      "OutputFolder": ""
+      "OutputFolder": "D:\\temp\\backup"
     }
   },
   "Maintanance": {
