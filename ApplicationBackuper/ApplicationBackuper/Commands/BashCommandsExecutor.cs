@@ -42,15 +42,15 @@ namespace ApplicationBackuper.Commands
                 p.StandardInput.WriteLine("exit");
             }
 
-            using (StreamReader sr = p.StandardOutput)
-            {
-                _logger.Log(sr.ReadToEnd());
-            }
+            //using (StreamReader sr = p.StandardOutput)
+            //{
+            //    _logger.Log(sr.ReadToEnd());
+            //}
 
-            using (StreamReader sr = p.StandardError)
-            {
-                _logger.Log(sr.ReadToEnd());
-            }
+            //using (StreamReader sr = p.StandardError)
+            //{
+            //    _logger.Log(sr.ReadToEnd());
+            //}
         }
     }
 }

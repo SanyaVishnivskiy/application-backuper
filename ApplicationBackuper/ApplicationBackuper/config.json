@@ -11,7 +11,8 @@
     ],
     "Backup": {
       "Pathes": [
-        "D:\\site"
+        "D:\\temp\\toBackup\\site",
+        "D:\\temp\\toBackup\\log.txt"
       ],
       "OutputFolder": "D:\\temp\\backup"
     }

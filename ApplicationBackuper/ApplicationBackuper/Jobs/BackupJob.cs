@@ -8,11 +8,11 @@ namespace ApplicationBackuper.Jobs
 {
     public class BackupJob : IAsyncJob
     {
-        private readonly IBackupComponent _component;
+        private readonly IServiceBackupComponent _component;
         private readonly ILogger _logger;
 
         public BackupJob(
-            IBackupComponent component,
+            IServiceBackupComponent component,
             ILogger logger)
         {
             _component = component ?? throw new ArgumentNullException(nameof(component));

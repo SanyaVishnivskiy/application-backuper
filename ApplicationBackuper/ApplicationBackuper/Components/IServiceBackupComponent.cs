@@ -2,7 +2,7 @@
 
 namespace ApplicationBackuper.Components
 {
-    public interface IBackupComponent
+    public interface IServiceBackupComponent
     {
         Task Backup();
     }

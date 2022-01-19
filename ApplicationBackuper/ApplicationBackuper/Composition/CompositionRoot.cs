@@ -49,8 +49,14 @@ namespace ApplicationBackuper.Composition
             }
 
             var commandExecutor = new BashCommandsExecutor(_logger);
+            var backupComponent = new FileBackupComponent(config, _logger);
 
-            var component = new BackupComponent(commandExecutor, config, _logger);
+            var component = new ServiceBackupComponent(
+                commandExecutor,
+                backupComponent,
+                config,
+                _logger);
+
             return new BackupJob(component, _logger);
         }
 
