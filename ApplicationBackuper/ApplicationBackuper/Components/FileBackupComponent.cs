@@ -1,8 +1,8 @@
 ﻿using ApplicationBackuper.Common;
 using ApplicationBackuper.Configuration;
-using Aspose.Zip;
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,18 +22,22 @@ namespace ApplicationBackuper.Components
         public Task Backup()
         {
             var archiveName = CreateArchiveName();
-            using var zipStream = File.Open(archiveName, FileMode.Create);
-            using var archive = new Archive();
+            var tempDirectory = Path.Combine(
+                _configuration.Backup.OutputFolder,
+                Path.GetFileNameWithoutExtension(archiveName));
+
+            Directory.CreateDirectory(tempDirectory);
 
             foreach (var path in _configuration.Backup.Pathes)
             {
-                _logger.Log($"Adding path {path} to archive...");
-                AddEntry(archive, path);
+                CopyAll(path, tempDirectory);
             }
 
-            archive.Save(zipStream);
-
+            _logger.Log($"Creating zip file {archiveName}...");
+            ZipFile.CreateFromDirectory(tempDirectory, archiveName, CompressionLevel.Optimal, false);
             _logger.Log($"Zip file {archiveName} was created successfully");
+
+            Directory.Delete(tempDirectory, true);
 
             return Task.CompletedTask;
         }
@@ -53,11 +57,11 @@ namespace ApplicationBackuper.Components
             return string.Join("_", archiveName.Split(invalidChars));
         }
 
-        private void AddEntry(Archive archive, string path)
+        private void CopyAll(string path, string targetFolder)
         {
             if (!File.Exists(path) && !Directory.Exists(path))
             {
-                _logger.Log($"File path {path} does not exists. Skipping it");
+                _logger.Log($"File or directory does not exists {path}. Ignoring it.");
                 return;
             }
 
@@ -65,13 +69,50 @@ namespace ApplicationBackuper.Components
 
             if (attr.HasFlag(FileAttributes.Directory))
             {
-                var directory = new DirectoryInfo(path);
-                archive.CreateEntries(directory);
+                var sourceDirectory = new DirectoryInfo(path).Name;
+                CopyDirectory(path, Path.Combine(targetFolder, sourceDirectory));
                 return;
             }
 
-            var file = new FileInfo(path);
-            archive.CreateEntry(file.Name, file);
+            CopyFile(path, targetFolder);
+        }
+
+        private void CopyDirectory(string sourceDirectory, string targetDirectory)
+        {
+            var diSource = new DirectoryInfo(sourceDirectory);
+            var diTarget = new DirectoryInfo(targetDirectory);
+
+            CopyDirectory(diSource, diTarget);
+        }
+
+        private void CopyDirectory(DirectoryInfo source, DirectoryInfo target)
+        {
+            Directory.CreateDirectory(target.FullName);
+
+            foreach (var file in source.GetFiles())
+            {
+                CopyFile(file, target);
+            }
+
+            foreach (var subDirectory in source.GetDirectories())
+            {
+                var nextTargetSubDir = target.CreateSubdirectory(subDirectory.Name);
+                CopyDirectory(subDirectory, nextTargetSubDir);
+            }
+        }
+
+        private void CopyFile(string filePath, string directoryPath)
+        {
+            var file = new FileInfo(filePath);
+            var directory = new DirectoryInfo(directoryPath);
+
+            CopyFile(file, directory);
+        }
+
+        private void CopyFile(FileInfo file, DirectoryInfo target)
+        {
+            _logger.Log(@"Copying {0}\{1}", target.FullName, file.Name);
+            file.CopyTo(Path.Combine(target.FullName, file.Name), true);
         }
     }
 }
