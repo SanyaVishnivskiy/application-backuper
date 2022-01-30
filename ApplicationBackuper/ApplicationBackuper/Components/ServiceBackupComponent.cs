@@ -28,13 +28,25 @@ namespace ApplicationBackuper.Components
         public async Task Backup()
         {
             _logger.Log("Executing stop service commands");
-            await _commandExecutor.Execute(_configuration.StopCommands);
+            var exitCode = await _commandExecutor.Execute(_configuration.StopCommands);
+            ThrowIfNotSuccess(exitCode);
 
             _logger.Log("Creating archive");
             await _archiver.Backup();
 
             _logger.Log("Executing start service commands");
             await _commandExecutor.Execute(_configuration.StartCommands);
+            ThrowIfNotSuccess(exitCode);
+        }
+
+        private void ThrowIfNotSuccess(int exitCode)
+        {
+            if (exitCode == 0)
+                return;
+
+            var logCommand = $"Command exited with error exit code {exitCode}";
+            _logger.Log(logCommand);
+            throw new InvalidOperationException(logCommand);
         }
     }
 }

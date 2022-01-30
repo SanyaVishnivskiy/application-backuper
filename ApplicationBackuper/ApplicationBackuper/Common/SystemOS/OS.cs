@@ -6,7 +6,13 @@ namespace ApplicationBackuper.Common
 {
     public interface IOS
     {
-        string BashPath { get; }
+        IOSShell Shell { get; }
+    }
+
+    public interface IOSShell
+    {
+        string Path { get; }
+        string ArgsPrefix { get; }
     }
 
     public static class OS
@@ -30,6 +36,6 @@ namespace ApplicationBackuper.Common
             throw new Exception("OS not supported");
         }
 
-        public static IOS Platform => _os;
+        public static IOSShell Shell => _os.Shell;
     }
 }

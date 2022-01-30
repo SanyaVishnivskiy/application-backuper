@@ -5,6 +5,6 @@ namespace ApplicationBackuper.Commands
 {
     public interface ICommandsExecutor
     {
-        Task Execute(List<string> commands);
+        Task<int> Execute(List<string> commands);
     }
 }

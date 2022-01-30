@@ -16,41 +16,37 @@ namespace ApplicationBackuper.Commands
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task Execute(List<string> commands)
+        public async Task<int> Execute(List<string> commands)
         {
-            Process p = new Process()
+            var commandArgs = string.Join(" && ", commands);
+
+            var process = new Process()
             {
-                StartInfo = new ProcessStartInfo(OS.Platform.BashPath)
+                StartInfo = new ProcessStartInfo(OS.Shell.Path)
                 {
-                    RedirectStandardInput = true,
+                    RedirectStandardInput = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
+                    Arguments = OS.Shell.ArgsPrefix + commandArgs
                 }
             };
 
-            p.Start();
+            process.Start();
+            await process.WaitForExitAsync();
 
-            using (StreamWriter sw = p.StandardInput)
+            using (StreamReader sr = process.StandardOutput)
             {
-                foreach (var command in commands)
-                {
-                    await sw.WriteLineAsync(command);
-                }
-
-                p.StandardInput.WriteLine("exit");
+                _logger.Debug("Output: " + sr.ReadToEnd());
             }
 
-            //using (StreamReader sr = p.StandardOutput)
-            //{
-            //    _logger.Log(sr.ReadToEnd());
-            //}
+            using (StreamReader sr = process.StandardError)
+            {
+                _logger.Debug("Error: " + sr.ReadToEnd());
+            }
 
-            //using (StreamReader sr = p.StandardError)
-            //{
-            //    _logger.Log(sr.ReadToEnd());
-            //}
+            return process.ExitCode;
         }
     }
 }
